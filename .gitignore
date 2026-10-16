@@ -1,0 +1,26 @@
+.venv/
+__pycache__/
+*.py[cod]
+.ipynb_checkpoints/
+.pytest_cache/
+
+# Raw data stays out of git. Download with scripts/download_data.py.
+data/raw/
+*.csv
+!artifacts/metrics/*.csv
+
+# Drive bundle contains the raw zip. Fitted models under artifacts/models are small
+# enough to keep with the code; a copy also sits in deliverables/ for upload.
+deliverables/
+
+# Root-level wandb cache only. Offline runs under artifacts/wandb are kept.
+/wandb/
+
+agent-tools/
+*.log
+report/main.aux
+report/main.log
+report/main.out
+report/main.bbl
+report/main.blg
+report/main.synctex.gz

@@ -1,0 +1,5 @@
+{
+  "rule": "Highest validation ROC-AUC within each paradigm. Thresholds were already locked on validation F1.",
+  "best_traditional": "E10",
+  "best_deep": "E15"
+}
