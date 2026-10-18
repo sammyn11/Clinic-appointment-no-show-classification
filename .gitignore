@@ -24,3 +24,6 @@ report/main.out
 report/main.bbl
 report/main.blg
 report/main.synctex.gz
+
+# Local download bundle for Colab. Not part of the source tree.
+notebooks/*.zip
