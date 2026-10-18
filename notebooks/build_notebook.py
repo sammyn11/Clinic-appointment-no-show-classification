@@ -20,19 +20,138 @@ This notebook ranks booked visits by the chance they will be missed. The operati
 
 The extract is the public Vitória, Brazil appointment file (110,527 rows). It is not an African facility file. Comparable open microdata were not available, and the written report treats the geography as a limit on deployment. `No-show = Yes` in the source file means the patient did **not** attend. That is the positive class.
 
-Set `RETRAIN = False` to read the saved metrics and figures. Set it to `True` to fit all sixteen models again. Either way, run the notebook from the repository root so `src/` and `artifacts/` resolve.
+Set `RETRAIN = False` to read the saved metrics and figures. Set it to `True` to fit all sixteen models again.
+
+On a local checkout, run this notebook from the repository root so `src/` is next to it. Google Colab opens the `.ipynb` by itself and does not bring `src/clinic_noshow` along. Paste the public GitHub URL into `GITHUB_REPO_URL` in the first cell before you submit, and the facilitator’s Colab session clones the rest of the project. `DRIVE_CODE_ZIP_URL` is the alternative: a zip of this repository shared as “Anyone with the link can view”. Mounting My Drive only sees files already in that Google account, so a shared folder has to be downloaded by that link or copied into My Drive first (`DRIVE_PROJECT_FOLDER`).
 """)
 
 code("""
 from pathlib import Path
+import os
+import subprocess
 import sys
 
-import pandas as pd
+# Fill these in before submission. Leave a line blank to skip that option.
+# GitHub must be the repository that contains src/clinic_noshow.
+GITHUB_REPO_URL = ""
+# Public Drive link to a zip of the same repository (File → Share → Anyone with the link).
+DRIVE_CODE_ZIP_URL = ""
+# Folder name inside My Drive, after the shared project has been copied into this account.
+DRIVE_PROJECT_FOLDER = ""
 
-ROOT = Path.cwd()
-if not (ROOT / "src").exists() and (ROOT.parent / "src").exists():
-    ROOT = ROOT.parent
-sys.path.insert(0, str(ROOT / "src"))
+
+def _usable(url: str) -> str:
+    text = url.strip()
+    if not text or "REPLACE_WITH" in text:
+        return ""
+    return text
+
+
+def _has_package(folder: Path) -> bool:
+    return (folder / "src" / "clinic_noshow" / "__init__.py").is_file()
+
+
+def _find_existing() -> Path | None:
+    seeds = [Path.cwd(), Path("/content")]
+    content = Path("/content")
+    if content.is_dir():
+        seeds.extend(path for path in content.iterdir() if path.is_dir())
+    seen: set[Path] = set()
+    for seed in seeds:
+        for candidate in (seed, *seed.parents):
+            if candidate in seen:
+                continue
+            seen.add(candidate)
+            if _has_package(candidate):
+                return candidate
+    return None
+
+
+def _clone_github(url: str) -> Path:
+    destination = Path("/content/clinic-noshow")
+    if not _has_package(destination):
+        if destination.exists():
+            import shutil
+            shutil.rmtree(destination)
+        subprocess.check_call(["git", "clone", "--depth", "1", url, str(destination)])
+    if not _has_package(destination):
+        raise FileNotFoundError(f"Cloned {url} but src/clinic_noshow was not in it.")
+    return destination
+
+
+def _download_drive_zip(url: str) -> Path:
+    subprocess.check_call([sys.executable, "-m", "pip", "install", "-q", "gdown"])
+    import gdown
+    import zipfile
+
+    zip_path = Path("/content/clinic-noshow-code.zip")
+    gdown.download(url, str(zip_path), quiet=False, fuzzy=True)
+    destination = Path("/content/clinic-noshow-drive")
+    destination.mkdir(parents=True, exist_ok=True)
+    with zipfile.ZipFile(zip_path) as archive:
+        archive.extractall(destination)
+    if _has_package(destination):
+        return destination
+    for child in destination.iterdir():
+        if child.is_dir() and _has_package(child):
+            return child
+    raise FileNotFoundError("The Drive zip did not contain src/clinic_noshow.")
+
+
+def _mount_drive_folder(folder_name: str) -> Path:
+    from google.colab import drive
+
+    drive.mount("/content/drive")
+    root = Path("/content/drive/MyDrive")
+    direct = root / folder_name
+    if _has_package(direct):
+        return direct
+    for child in root.iterdir():
+        nested = child / folder_name
+        if _has_package(child) and child.name == folder_name:
+            return child
+        if _has_package(nested):
+            return nested
+    raise FileNotFoundError(
+        f"My Drive has no folder named {folder_name} containing src/clinic_noshow. "
+        "Add a shortcut to the shared folder, or copy the project into My Drive."
+    )
+
+
+ROOT = _find_existing()
+if ROOT is None and _usable(GITHUB_REPO_URL):
+    ROOT = _clone_github(_usable(GITHUB_REPO_URL))
+if ROOT is None and _usable(DRIVE_CODE_ZIP_URL):
+    ROOT = _download_drive_zip(_usable(DRIVE_CODE_ZIP_URL))
+if ROOT is None and DRIVE_PROJECT_FOLDER.strip():
+    ROOT = _mount_drive_folder(DRIVE_PROJECT_FOLDER.strip())
+if ROOT is None:
+    raise FileNotFoundError(
+        "This Colab session has the notebook and not the training package. "
+        "Paste the public GitHub repository into GITHUB_REPO_URL, or a public "
+        "Drive zip link into DRIVE_CODE_ZIP_URL, then run this cell again."
+    )
+
+os.chdir(ROOT)
+if str(ROOT / "src") not in sys.path:
+    sys.path.insert(0, str(ROOT / "src"))
+
+missing = []
+for module_name, pip_name in (
+    ("pandas", "pandas"),
+    ("sklearn", "scikit-learn"),
+    ("tensorflow", "tensorflow"),
+    ("matplotlib", "matplotlib"),
+    ("joblib", "joblib"),
+):
+    try:
+        __import__(module_name)
+    except Exception:
+        missing.append(pip_name)
+if missing:
+    subprocess.check_call([sys.executable, "-m", "pip", "install", "-q", *missing])
+
+import pandas as pd
 
 from clinic_noshow.config import FIG_DIR, METRIC_DIR, SEED
 from clinic_noshow.preprocess import prepare_dataset
