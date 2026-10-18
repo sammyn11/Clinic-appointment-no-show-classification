@@ -45,14 +45,14 @@ Leave `RETRAIN = False` to read the saved metrics. Set it to `True` to fit again
 
 Colab receives the notebook file and nothing else. The training code is `src/clinic_noshow` in this repository, so opening the `.ipynb` on its own raises `ModuleNotFoundError: clinic_noshow`.
 
-Before you submit, paste your public GitHub URL into `GITHUB_REPO_URL` in the first code cell. The facilitator runs that cell and Colab clones the repository, including `src/`, the saved figures, and the experiment table. They then set `RETRAIN = True` and choose **Runtime → Run all** when they want to train rather than read the saved results.
+`GITHUB_REPO_URL` in the first code cell is `https://github.com/sammyn11/Clinic-appointment-no-show-classification.git`. The facilitator runs that cell and Colab clones the repository, including `src/`, the saved figures, and the experiment table. They then set `RETRAIN = True` and choose **Runtime → Run all** when they want to train rather than read the saved results.
 
 Google Drive can supply the same files. It does not happen through **Mount Drive** alone: that shows the facilitator’s own My Drive, and a folder shared with them stays invisible until they add a shortcut or copy it. Two Drive options are in the same cell:
 
 1. Zip the repository (`git archive -o clinic-noshow-code.zip HEAD` from this folder). Upload that zip to the shared Drive folder, set it to “Anyone with the link can view”, and paste the file link into `DRIVE_CODE_ZIP_URL`. The cell downloads the zip. The raw CSV is still fetched by the training code, so leave `data/raw/` out of the zip.
 2. If the project folder already sits in the facilitator’s My Drive, set `DRIVE_PROJECT_FOLDER` to that folder name. The cell mounts Drive and uses it.
 
-Fill in at least `GITHUB_REPO_URL`. The Drive lines can stay empty.
+The GitHub URL is already filled in. The Drive lines can stay empty.
 
 ## Result in one paragraph
 
@@ -62,7 +62,7 @@ An unweighted histogram gradient booster is the selected traditional model (test
 
 Three things are not done, because they need your accounts and your face.
 
-1. **GitHub.** Put the three links on the first page of `report/main.tex` (they are marked `REPLACE_WITH_...`), recompile with `pdflatex`, and push this project to the repository you want marked.
+1. **GitHub.** The repository link on the first page of `report/main.tex` is `https://github.com/sammyn11/Clinic-appointment-no-show-classification`. The Drive and video lines are still marked `REPLACE_WITH_...`. Fill those in, then recompile with `pdflatex`.
 2. **Google Drive.** Zip up is already at `deliverables/noshowappointments-raw.zip`. Model files are in `deliverables/models/`. Upload that folder and set sharing to “Anyone with the link can view.” Paste the link into the report.
 3. **Video.** Record 5–10 minutes with the camera on, using `presentation/speaker_script.md`. Explain the problem, the Vitória file and why it is not an African extract, the patient split, why the unrestricted forest overfits, and why the F1 threshold is the wrong rule for overbooking.
 

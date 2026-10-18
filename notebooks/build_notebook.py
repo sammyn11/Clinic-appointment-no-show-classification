@@ -22,7 +22,7 @@ The extract is the public Vitória, Brazil appointment file (110,527 rows). It i
 
 Set `RETRAIN = False` to read the saved metrics and figures. Set it to `True` to fit all sixteen models again.
 
-On a local checkout, run this notebook from the repository root so `src/` is next to it. Google Colab opens the `.ipynb` by itself and does not bring `src/clinic_noshow` along. Paste the public GitHub URL into `GITHUB_REPO_URL` in the first cell before you submit, and the facilitator’s Colab session clones the rest of the project. `DRIVE_CODE_ZIP_URL` is the alternative: a zip of this repository shared as “Anyone with the link can view”. Mounting My Drive only sees files already in that Google account, so a shared folder has to be downloaded by that link or copied into My Drive first (`DRIVE_PROJECT_FOLDER`).
+On a local checkout, run this notebook from the repository root so `src/` is next to it. Google Colab opens the `.ipynb` by itself and does not bring `src/clinic_noshow` along. `GITHUB_REPO_URL` in the first cell points at the public GitHub repository, and the facilitator’s Colab session clones the rest of the project. `DRIVE_CODE_ZIP_URL` is the alternative: a zip of this repository shared as “Anyone with the link can view”. Mounting My Drive only sees files already in that Google account, so a shared folder has to be downloaded by that link or copied into My Drive first (`DRIVE_PROJECT_FOLDER`).
 """)
 
 code("""
@@ -33,7 +33,7 @@ import sys
 
 # Fill these in before submission. Leave a line blank to skip that option.
 # GitHub must be the repository that contains src/clinic_noshow.
-GITHUB_REPO_URL = ""
+GITHUB_REPO_URL = "https://github.com/sammyn11/Clinic-appointment-no-show-classification.git"
 # Public Drive link to a zip of the same repository (File → Share → Anyone with the link).
 DRIVE_CODE_ZIP_URL = ""
 # Folder name inside My Drive, after the shared project has been copied into this account.
